@@ -1,0 +1,87 @@
+<link rel="stylesheet" href="https://generativeart.online/css/drawing-app.css">
+<head>
+  <title>emojis</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+SC&display=swap");
+    body {
+      background-color: #FFFFFF;
+      color: #000000;
+      word-wrap: anywhere;
+      font-family: "Noto Serif SC";
+    }
+  </style>
+</head>
+
+<script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js"></script>
+<script>
+/* global nn */  
+
+let remove = true
+let delay = 1000 * 2
+
+const red = ['🟥', '🔴', '❤️', '🅾️', '🇭🇰', '🐙']
+const orange = ['🟧', '🟠', '🧡', '☢️', '🦀']
+const yellow = ['🟨', '🟡', '💛', '⚠️', '⭐', '🌕']
+const green = ['🟩', '🟢', '💚', '🇸🇦', '🍀', '🐢']
+const blue = ['🟦', '🔵', '💙', '🈂️', '🇪🇺', '🪼', '🌀']
+const purple = ['🟪', '🟣', '💜', '🛐', '☂️']
+const white = ['⬜', '⚪', '🤍', '🇨🇾', '☁️']
+const black = ['⬛', '⚫', '🖤', '🎱', '🐾']
+
+const colors = [red, orange, yellow, green, blue, purple, white, black]
+
+let color_index = Math.floor(nn.random(colors.length))
+let color = nn.random(color_index)
+
+
+const removeEmoji = function(e){
+  if (remove){
+    setTimeout(() => {e.remove()}, delay)
+  }
+}
+
+const createCircle = function(color, x = nn.random(nn.width), y = nn.random(nn.height)){
+  
+  let fontSize = Math.random() * 20 + 10
+  
+  for (let i = 0; i < 4; i++){
+    for (let j = 0; j < i*5; j++){
+      let radius = i*20
+      let angle = (2*Math.PI)/(i*5)*j
+      const e = nn.create('span')
+        .content(nn.random(color))
+        .css({
+        fontSize: fontSize,
+        position: "absolute",
+        left: x - fontSize / 2 + Math.cos(angle) * radius,
+        top: y - fontSize * 2/3 + Math.sin(angle) * radius
+      }) 
+        .addTo('body')
+        .on("mousemove", () => console.log(this.fontSize))
+      removeEmoji(e)
+      setTimeout(1000)
+    }
+  }
+}
+
+const changeColor = function(){
+  let rand = Math.floor(Math.random() * 100)
+  if (rand < 5){color_index++}
+  else if (rand > 95){color_index--}
+  console.log(color_index)
+  color_index %= colors.length
+  if (color_index < 0){color_index = colors.length - 1}
+  color = colors[color_index]
+}
+
+const draw = function(){  
+  if (nn.mouseDown){
+    changeColor()
+    createCircle(color, nn.mouseX, nn.mouseY)
+  }
+}
+ 
+nn.on("mousemove", () => draw()) 
+nn.on("mousedown", () => createCircle(color, nn.mouseX, nn.mouseY))
+  
+</script>
